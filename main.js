@@ -20,14 +20,14 @@ request(url, (error, response, body) => {
     respFinal['brand'] = parseHtml('div.brand').text()
     // iteração sobre cada elemento da tag 'a', depois o metodo get() para retornar um array de string 
     respFinal['categories'] = parseHtml('nav a').map((i, e) => parseHtml(e).text()).get()
-    // respFinal['description'] = parseHtml('div.proddet p').text()
-
+    respFinal['description'] = parseHtml('div.proddet p').text()
     // map para fazer um array de objetos, parecido com o que eu ja tinha feito sendo o 'e' a posição da tag html
     respFinal['skus'] = parseHtml('div.card').map((i, e) => ({
         // buscando o nome, e atribuindo a chave name
         name: parseHtml(e).find('div.prod-nome').text(),
         // buscando o valor e atribuindo a chave current_price, caso não tenha um valor é adicionado o NULL no resultado final
-        current_price: parseHtml(e).find('div.prod-pnow').text() ? parseHtml(e).find('div.prod-pnow').text() : null,
+            current_price: parseHtml(e).find('div.prod-pnow')
+            .text() ? parseFloat(parseHtml(e).find('div.prod-pnow').text().replace(/R\$|\,/g, "")) : null,
         // buscando o valor antigo e atribuindo a chave old_price caso não exista valor antigo o NULL é adicionado no resultado final
         old_price: parseHtml(e).find('div.prod-pold').text() ? parseHtml(e).find('div.prod-pold').text() : null,
         /*
@@ -44,6 +44,19 @@ request(url, (error, response, body) => {
         // uso do metodo next para ele pegar o proximo td, sem o next ele armazenaria os dois td's que contem nos 'tr'
         value: parseHtml(e).find('td').next().text()
     })).get()
+
+    respFinal['reviews'] = parseHtml('div.analisebox').map((i, e) => ({
+        name: parseHtml(e).find('div.pure-u-21-24 > span.analiseusername').text(),
+        date: parseHtml(e).find('div.pure-u-21-24 > span.analisedate').text(),
+        score: parseHtml(e).find('div.pure-u-21-24 > span.analisestars').length,
+        text: parseHtml(e).find('p').text()
+    })).get()
+
+    // Usei o matodo html para modificar o conteudo do h4, como o 3.3 já é a média apenas coloquei esse valor e usei o
+    // parseFloat para colocar ele como sendo um float e não uma string
+    respFinal['reviews_average_score'] = parseFloat(parseHtml('div#comments > h4').html('<h4>3.3</h4>').text())
+
+    respFinal['url'] = url
 
     // Gerar o string JSON
     const jsonRespFinal = JSON.stringify(respFinal)
