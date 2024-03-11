@@ -27,12 +27,16 @@ request(url, (error, response, body) => {
         name: parseHtml(e).find('div.prod-nome').text(),
         // buscando o valor e atribuindo a chave current_price, caso não tenha um valor é adicionado o NULL no resultado final
         
-        current_price: parseHtml(e).find('div.prod-pnow').text() 
-        ? parseFloat(parseHtml(e).find('div.prod-pnow').text().replace(/R\$|\,/g, "")) : null,
-        // não consegui transformar em float, esse foi o maximo que cheguei usando regex
+        current_price: parseHtml(e).find('div.prod-pnow').text()
+        ? parseFloat(parseHtml(e).find('div.prod-pnow').text().replace(/R\$|/g, "").replace(",", ".").trim()): null,        
+        /*
+        Para transformar em float primeiro usei o replace para tirar os R$, depois outro replace para substituir a virgula(,) pro pronto(.)
+        e a função trim para tirar espaços inuteis. Por ultimo envolvi tudo isso em uma função que passa realmente para float, o parseFloat.
+        */
         
         // buscando o valor antigo e atribuindo a chave old_price caso não exista valor antigo o NULL é adicionado no resultado final
-        old_price: parseHtml(e).find('div.prod-pold').text() ? parseHtml(e).find('div.prod-pold').text() : null,
+        old_price: parseHtml(e).find('div.prod-pold').text()
+        ? parseFloat(parseHtml(e).find('div.prod-pold').text().replace(/R\$|/g, "").replace(",", ".").trim()) : null,
         /*
         Verificando se a classe not-avaliable existe, caso exista adiciona um TRUE, optei por usar essa classe pois
         as outras duas tinham nomes diferentes. E finalmente o valor é adicionado na chave avaliable
