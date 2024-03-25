@@ -55,7 +55,7 @@ request(url, (error, response, body) => {
     respFinal['reviews'] = parseHtml('div.analisebox').map((i, e) => ({
         name: parseHtml(e).find('div.pure-u-21-24 > span.analiseusername').text(),
         date: parseHtml(e).find('div.pure-u-21-24 > span.analisedate').text(),
-        score: parseHtml(e).find('div.pure-u-21-24 > span.analisestars').text().replace(/[^★]/g, '').length,
+        score: parseHtml(e).find('div.pure-u-21-24 > span.analisestars').text().replace('☆', '').length,
         text: parseHtml(e).find('p').text()
     })).get()
 
